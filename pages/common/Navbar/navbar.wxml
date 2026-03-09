@@ -1,0 +1,1 @@
+<view class="navBar" style="{{'padding-top:'+(ht+'rpx')+';'}}"><image class="index_bg" src="../../../static/bg.png"></image></view>

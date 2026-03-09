@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/order/index",
+    "pages/order/success",
+    "pages/nonet/index"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "瑞吉外卖",
+    "navigationBarBackgroundColor": "#E95F3C",
+    "backgroundColor": "#F8F8F8"
+  },
+  "usingComponents": {}
+}

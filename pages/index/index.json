@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "瑞吉外卖",
+  "usingComponents": {
+    "nav-bar": "/pages/common/Navbar/navbar"
+  }
+}
