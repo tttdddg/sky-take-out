@@ -14,10 +14,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Cookie;
 import java.io.PrintWriter;
 
 /**
- * jwt令牌校验的拦截器
+ * JWT admin token interceptor.
  */
 @Component
 @Slf4j
@@ -26,54 +27,77 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtProperties jwtProperties;
 
-    /**
-     * 校验jwt
-     *
-     * @param request
-     * @param response
-     * @param handler
-     * @return
-     * @throws Exception
-     */
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
-            //当前拦截到的不是动态方法，直接放行
             return true;
         }
 
-        //1、从请求头中读取Authorization（前端实际传递的Token头）
-        String authHeader = request.getHeader("Authorization");
-        log.info("接收到的Authorization请求头：{}", authHeader);
-
-        //2、处理Token格式：提取真正的Token（去掉Bearer前缀）
-        String token = null;
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7); // 去掉"Bearer "前缀（7个字符）
-        }
-
-        //3、校验令牌
         try {
-            log.info("jwt校验:{}", token);
-            // 校验Token有效性（使用与生成时相同的密钥）
+            // 1) Read token by configured header name first.
+            String configuredTokenName = jwtProperties.getAdminTokenName();
+            String token = request.getHeader(configuredTokenName);
+
+            // 2) Compatibility: common header names.
+            if (isBlank(token)) {
+                token = request.getHeader("Authorization");
+            }
+            if (isBlank(token)) {
+                token = request.getHeader("token");
+            }
+            if (isBlank(token)) {
+                token = request.getParameter("token");
+            }
+            if (isBlank(token)) {
+                token = readTokenFromCookies(request, configuredTokenName);
+            }
+
+            // 3) Compatibility: Bearer prefix.
+            if (!isBlank(token) && token.regionMatches(true, 0, "Bearer ", 0, 7)) {
+                token = token.substring(7).trim();
+            }
+
+            if (isBlank(token)) {
+                throw new IllegalArgumentException("JWT token is missing in request headers");
+            }
+
+            log.info("jwt校验 tokenName={}, token={}", configuredTokenName, token);
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
             Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
-            log.info("当前员工id：{}", empId); // 修复日志占位符错误
+            log.info("当前员工id: {}", empId);
             BaseContext.setCurrentId(empId);
-            //4、校验通过，放行
             return true;
         } catch (Exception ex) {
-            log.error("JWT校验失败：{}", ex.getMessage());
-            //5、校验失败，返回标准401响应（JSON格式）
+            log.error("JWT校验失败: {}", ex.getMessage());
             response.setStatus(401);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
             PrintWriter writer = response.getWriter();
-            // 返回标准JSON，前端能明确感知鉴权失败
             writer.write("{\"code\":401,\"msg\":\"Token无效或未携带有效Token\"}");
             writer.flush();
             writer.close();
             return false;
         }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    private String readTokenFromCookies(HttpServletRequest request, String configuredTokenName) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (cookie == null || isBlank(cookie.getName()) || isBlank(cookie.getValue())) {
+                continue;
+            }
+            String name = cookie.getName();
+            if (name.equals(configuredTokenName) || "token".equalsIgnoreCase(name) || "Authorization".equalsIgnoreCase(name)) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }
