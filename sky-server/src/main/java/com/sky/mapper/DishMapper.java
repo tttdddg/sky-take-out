@@ -44,4 +44,6 @@ public interface DishMapper {
     //批量插入菜品数据
     @AutoFill(value=OperationType.UPDATE)
     void update(Dish dish);
+
+    List<Dish> list(Dish dish);
 }

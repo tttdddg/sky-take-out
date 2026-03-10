@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Cookie;
 import java.io.PrintWriter;
 
 /**
@@ -22,7 +22,7 @@ import java.io.PrintWriter;
  */
 @Component
 @Slf4j
-public class JwtTokenAdminInterceptor implements HandlerInterceptor {
+public class JwtTokenUserInterceptor implements HandlerInterceptor {
 
     @Autowired
     private JwtProperties jwtProperties;
@@ -35,7 +35,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
 
         try {
             // 1) Read token by configured header name first.
-            String configuredTokenName = jwtProperties.getAdminTokenName();
+            String configuredTokenName = jwtProperties.getUserTokenName();
             String token = request.getHeader(configuredTokenName);
 
             // 2) Compatibility: common header names.
@@ -62,10 +62,10 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             }
 
             log.info("jwt校验 tokenName={}, token={}", configuredTokenName, token);
-            Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
-            log.info("当前员工id: {}", empId);
-            BaseContext.setCurrentId(empId);
+            Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
+            Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
+            log.info("当前员工id: {}", userId);
+            BaseContext.setCurrentId(userId);
             return true;
         } catch (Exception ex) {
             log.error("JWT校验失败: {}", ex.getMessage());
