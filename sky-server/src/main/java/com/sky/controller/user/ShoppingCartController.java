@@ -31,4 +31,10 @@ public class ShoppingCartController {
         return Result.success(list);
     }
 
+    @DeleteMapping("/clean")
+    public Result clean(){
+        log.info("清空购物车...");
+        shoppingCartService.cleanShoppingCart();
+        return Result.success();
+    }
 }
