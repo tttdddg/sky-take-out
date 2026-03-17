@@ -29,4 +29,8 @@ public interface OrderMapper {
     //查询超时订单
     @Select("select * from orders where status=#{status} and order_time < (当前时间 -15分钟)")
     List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
+
+    //根据id查询订单
+    @Select("select * from orders where id=#{id}")
+    Orders getById(long id);
 }
