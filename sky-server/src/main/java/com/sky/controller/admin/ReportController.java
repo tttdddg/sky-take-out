@@ -55,7 +55,7 @@ public class ReportController {
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end){
         log.info("销量排名");
-
-        return Result.success(reportService.getOrderStatistics());
+        SalesTop10ReportVO salesTop10ReportVO=reportService.getSalesTop10(begin,end);
+        return Result.success(salesTop10ReportVO);
     }
 }
