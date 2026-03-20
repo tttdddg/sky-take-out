@@ -87,9 +87,12 @@ public class OrderServiceImpl implements OrderService {
             OrderDetail orderDetail=new OrderDetail();//订单明细
             BeanUtils.copyProperties(cart,orderDetail);
             orderDetail.setOrderId(orders.getId());//当前订单明细关联id
+            orderDetailList.add(orderDetail);
         }
 
-        orderDetailMapper.insertBatch(orderDetailList);
+        if(orderDetailList!=null&&orderDetailList.size()>0){
+            orderDetailMapper.insertBatch(orderDetailList);
+        }
 
         //清空购物车
         shoppingCartMapper.deleteByUserId(userId);
@@ -177,7 +180,7 @@ public class OrderServiceImpl implements OrderService {
         Map map=new HashMap();
         map.put("type",2);//1表示来电提醒,2表示客户催单
         map.put("orderId",id);
-        map.put("content","订单号："+ordersDB);
+        map.put("content","订单号："+ordersDB.getNumber());
         String json= JSON.toJSONString(map);
         webSocketServer.sendToAllClient(json);
     }

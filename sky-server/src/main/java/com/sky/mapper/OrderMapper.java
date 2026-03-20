@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
@@ -29,8 +30,8 @@ public interface OrderMapper {
     void update(Orders orders);
 
     //查询超时订单
-    @Select("select * from orders where status=#{status} and order_time < (当前时间 -15分钟)")
-    List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
+    @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
+    List<Orders> getByStatusAndOrderTimeLT(@Param("status") Integer status, @Param("orderTime") LocalDateTime orderTime);
 
     //根据id查询订单
     @Select("select * from orders where id=#{id}")
@@ -43,5 +44,5 @@ public interface OrderMapper {
     Integer countByMap(Map map);
 
     //查询销量排名top10
-    List<GoodsSalesDTO> getSalesTop10(LocalDateTime begin, LocalDateTime end);
+    List<GoodsSalesDTO> getSalesTop10(@Param("begin") LocalDateTime begin, @Param("end") LocalDateTime end);
 }
