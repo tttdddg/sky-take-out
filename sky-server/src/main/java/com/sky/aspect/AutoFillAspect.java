@@ -48,8 +48,8 @@ public class AutoFillAspect {
             try{
                 Method setCreateTime=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME,LocalDateTime.class);
                 Method setCreateUser=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER,Long.class);
-                Method setUpdateTime=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER,LocalDateTime.class);
-                Method setUpdateUser=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME,Long.class);
+                Method setUpdateTime=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME,LocalDateTime.class);
+                Method setUpdateUser=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER,Long.class);
 
                 setCreateTime.invoke(entity,now);
                 setCreateUser.invoke(entity,currentId);
@@ -60,8 +60,8 @@ public class AutoFillAspect {
             }
         }else if(operationType==OperationType.UPDATE){
             try{
-                Method setUpdateTime=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER,LocalDateTime.class);
-                Method setUpdateUser=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME,Long.class);
+                Method setUpdateTime=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME,LocalDateTime.class);
+                Method setUpdateUser=entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER,Long.class);
 
                 setUpdateTime.invoke(entity,now);
                 setUpdateUser.invoke(entity,currentId);

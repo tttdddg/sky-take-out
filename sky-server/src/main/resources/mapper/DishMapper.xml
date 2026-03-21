@@ -22,7 +22,7 @@
                 and d.name like concat('%',#{name},'%')
             </if>
             <if test="categoryId!=null">
-                and d.categoryId = #{categoryId}
+                and d.category_id = #{categoryId}
             </if>
             <if test="status!=null">
                 and d.status = #{status}
@@ -58,5 +58,16 @@
         </where>
     </select>
 
-    <select id="list" resultType="com.sky.entity.Dish"></select>
+    <select id="list" resultType="com.sky.entity.Dish">
+        select * from dish
+        <where>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by sort asc, create_time desc
+    </select>
 </mapper>

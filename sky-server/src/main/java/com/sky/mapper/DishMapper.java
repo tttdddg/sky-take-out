@@ -8,6 +8,7 @@ import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public interface DishMapper {
     void deleteById(Long id);
 
     //根据菜品id集合删除菜品数据
-    void deleteByIds(List<Long> ids);
+    void deleteByIds(@Param("ids") List<Long> ids);
 
     //批量插入菜品数据
     @AutoFill(value=OperationType.UPDATE)
