@@ -37,11 +37,10 @@
 
 
 
-#### 后端：
 
-​	基于maven、分模块开发
+基于maven、分模块开发
 
-​	移除swagger注解和依赖，接口调试使用Apifox
+移除swagger注解和依赖，接口调试使用Apifox
 
 
 
